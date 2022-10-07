@@ -33,8 +33,10 @@ server.usePondLive([{
     secret: '8011d716-de08-4dad-94eb-4176251682d5' // The secret used to sign the JWT
 });
 
-server.listen(4000, () => {
-    console.log('Listening on port 4000');
+const port = Number(process.env.PORT || 3000);
+
+server.listen(port, () => {
+    console.log(`Listening on port: ${port}`);
 });
 
 /**

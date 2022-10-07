@@ -1,0 +1,25 @@
+{
+  "name": "tutorials",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tailwind:watch": "tailwindcss -i ./src/input.css -o ./dist/tailwind.css -w",
+    "nodemon:watch": "nodemon ./server.ts",
+    "build": "tsc",
+    "dev": "concurrently \"npm run tailwind:watch\" \"npm run nodemon:watch\"",
+    "start": "node ./dist/server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^18.8.2",
+    "tailwindcss": "^3.1.8",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "pondsocket": "^0.1.107"
+  }
+}

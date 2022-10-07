@@ -15,6 +15,11 @@ const server = new PondServer();
  */
 const staticPath = path.join(__dirname, './src/index.html');
 
+server.use((req, _res, next) => {
+    console.log(req.url);
+    next();
+});
+
 /**
  * The useStatic function is used to serve static files to the client
  * NB right now it isn't possible to have the html file in the same directory as the static files

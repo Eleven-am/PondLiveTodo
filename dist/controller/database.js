@@ -94,7 +94,7 @@ var ReminderManager = function (socket) {
     monitorReminders(socket, reminders);
     var interval = setInterval(function () {
         monitorReminders(socket, reminders);
-    }, 5000);
+    }, 100);
     return {
         unsubscribe: function () {
             clearInterval(interval);

@@ -119,7 +119,7 @@ const ReminderManager = (socket: LiveSocket<any>): ReminderManagerType => {
 
     const interval = setInterval(() => {
         monitorReminders(socket, reminders);
-    }, 5000);
+    }, 100);
 
     return {
         unsubscribe: () => {

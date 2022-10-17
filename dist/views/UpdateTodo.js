@@ -5,7 +5,7 @@ var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cook
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateTodoModal = void 0;
-var pondsocket_1 = require("pondsocket");
+var live_1 = require("pondsocket/live");
 var database_1 = require("../controller/database");
 var index_1 = require("./index");
 /**
@@ -73,7 +73,7 @@ var index_1 = require("./index");
  *
  * There are a lot more properties that can be used to trigger events on the client, check the documentation for more info
  */
-exports.UpdateTodoModal = (0, pondsocket_1.LiveFactory)({
+exports.UpdateTodoModal = (0, live_1.LiveFactory)({
     routes: [],
     mount: function (context, socket, router) {
         if (context.params.id) {
@@ -108,7 +108,8 @@ exports.UpdateTodoModal = (0, pondsocket_1.LiveFactory)({
             error: undefined
         });
     },
-    onEvent: function (event, context, socket, router) {
+    onEvent: function (event, socket, router) {
+        var _this = this;
         if (event.type === 'closeModal')
             /**
              * The router.navigateTo function is used to navigate to a different page
@@ -116,31 +117,31 @@ exports.UpdateTodoModal = (0, pondsocket_1.LiveFactory)({
             router.navigateTo('/todo');
         if (event.type === 'title')
             socket.assign({
-                text: event.value
+                text: event.value || ''
             });
         if (event.type === 'description')
             socket.assign({
-                description: event.value
+                description: event.value || ''
             });
         if (event.type === 'addTodo') {
-            if (!context.text || !context.description) {
+            if (!this.text || !this.description) {
                 socket.assign({
                     error: 'Please fill out all fields'
                 });
                 return;
             }
-            if (context.id) {
-                var todo = database_1.database.find(function (todo) { return todo.id === context.id; });
+            if (this.id) {
+                var todo = database_1.database.find(function (todo) { return todo.id === _this.id; });
                 if (todo) {
-                    todo.text = context.text;
-                    todo.description = context.description;
+                    todo.text = this.text;
+                    todo.description = this.description;
                 }
             }
             else
                 database_1.database.push({
                     id: database_1.database.length + 1,
-                    text: context.text,
-                    description: context.description,
+                    text: this.text,
+                    description: this.description,
                     completed: false,
                     date: new Date()
                 });
@@ -149,13 +150,13 @@ exports.UpdateTodoModal = (0, pondsocket_1.LiveFactory)({
              */
             router.navigateTo('/todo');
             index_1.todoConsumer.assign(socket, {
-                todo: context.text,
+                todo: this.text,
                 action: true
             });
         }
     },
-    render: function (socket, _classes) {
-        return (0, pondsocket_1.html)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n            <div class=\"flex flex-col items-center justify-center w-full h-full absolute left-0 top-0 bg-cyan-900 bg-opacity-70\">\n                <div class=\"flex flex-col items-center justify-center w-1/2 h-1/2 bg-cyan-100 rounded-lg\">\n                    <div class=\"flex items-center justify-between w-full px-4 py-2 border-b border-cyan-200\">\n                    <div class=\"text-lg font-bold ", "\">", "</div>\n                        <div class=\"flex items-center justify-center w-8 h-8 mr-4 rounded-full bg-cyan-200\" pond-click=\"closeModal\">\n                            <span class=\"material-symbols-outlined text-cyan-700 cursor-pointer\">close</span>\n                        </div>\n                    </div>\n                    <div class=\"flex flex-col items-center justify-center w-full px-4 py-2\">\n                        <div class=\"flex flex-col w-full\">\n                            <label class=\"text-sm font-bold text-cyan-900\">Todo Title</label>\n                            <input class=\"w-full px-4 py-2 mt-2 border ", " rounded-lg\" pond-keyup=\"title\" type=\"text\" placeholder=\"Todo Title\" value=\"", "\">\n                        </div>\n                        <div class=\"flex flex-col w-full mt-4\">\n                            <label class=\"text-sm font-bold text-cyan-900\">Todo Description</label>\n                            <textarea class=\"w-full px-4 py-2 mt-2 border ", " rounded-lg\" pond-keyup=\"description\" placeholder=\"Todo Description\">", "</textarea>\n                        </div>\n                        <div class=\"flex items-center justify-center w-full mt-4\">\n                            <button class=\"px-4 py-2 text-sm font-bold text-cyan-100 bg-cyan-500 rounded-lg\" pond-click=\"addTodo\">", "</button>\n                        </div>\n                    </div>\n                </div>\n            </div>"], ["\n            <div class=\"flex flex-col items-center justify-center w-full h-full absolute left-0 top-0 bg-cyan-900 bg-opacity-70\">\n                <div class=\"flex flex-col items-center justify-center w-1/2 h-1/2 bg-cyan-100 rounded-lg\">\n                    <div class=\"flex items-center justify-between w-full px-4 py-2 border-b border-cyan-200\">\n                    <div class=\"text-lg font-bold ", "\">", "</div>\n                        <div class=\"flex items-center justify-center w-8 h-8 mr-4 rounded-full bg-cyan-200\" pond-click=\"closeModal\">\n                            <span class=\"material-symbols-outlined text-cyan-700 cursor-pointer\">close</span>\n                        </div>\n                    </div>\n                    <div class=\"flex flex-col items-center justify-center w-full px-4 py-2\">\n                        <div class=\"flex flex-col w-full\">\n                            <label class=\"text-sm font-bold text-cyan-900\">Todo Title</label>\n                            <input class=\"w-full px-4 py-2 mt-2 border ", " rounded-lg\" pond-keyup=\"title\" type=\"text\" placeholder=\"Todo Title\" value=\"", "\">\n                        </div>\n                        <div class=\"flex flex-col w-full mt-4\">\n                            <label class=\"text-sm font-bold text-cyan-900\">Todo Description</label>\n                            <textarea class=\"w-full px-4 py-2 mt-2 border ", " rounded-lg\" pond-keyup=\"description\" placeholder=\"Todo Description\">", "</textarea>\n                        </div>\n                        <div class=\"flex items-center justify-center w-full mt-4\">\n                            <button class=\"px-4 py-2 text-sm font-bold text-cyan-100 bg-cyan-500 rounded-lg\" pond-click=\"addTodo\">", "</button>\n                        </div>\n                    </div>\n                </div>\n            </div>"])), socket.context.error ? 'error' : 'text-cyan-900', socket.context.error ? socket.context.error : !!socket.context.id ? 'Edit Todo' : 'Add Todo', socket.context.error ? 'error' : 'border-cyan-200', socket.context.text, socket.context.error ? 'error' : 'border-cyan-200', socket.context.description, socket.context.id ? 'Edit Todo' : 'Add Todo');
+    render: function () {
+        return (0, live_1.html)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n            <div class=\"flex flex-col items-center justify-center w-full h-full absolute left-0 top-0 bg-cyan-900 bg-opacity-70\">\n                <div class=\"flex flex-col items-center justify-center w-1/2 h-1/2 bg-cyan-100 rounded-lg\">\n                    <div class=\"flex items-center justify-between w-full px-4 py-2 border-b border-cyan-200\">\n                    <div class=\"text-lg font-bold ", "\">", "</div>\n                        <div class=\"flex items-center justify-center w-8 h-8 mr-4 rounded-full bg-cyan-200\" pond-click=\"closeModal\">\n                            <span class=\"material-symbols-outlined text-cyan-700 cursor-pointer\">close</span>\n                        </div>\n                    </div>\n                    <div class=\"flex flex-col items-center justify-center w-full px-4 py-2\">\n                        <div class=\"flex flex-col w-full\">\n                            <label class=\"text-sm font-bold text-cyan-900\">Todo Title</label>\n                            <input class=\"w-full px-4 py-2 mt-2 border ", " rounded-lg\" pond-keyup=\"title\" type=\"text\" placeholder=\"Todo Title\" value=\"", "\">\n                        </div>\n                        <div class=\"flex flex-col w-full mt-4\">\n                            <label class=\"text-sm font-bold text-cyan-900\">Todo Description</label>\n                            <textarea class=\"w-full px-4 py-2 mt-2 border ", " rounded-lg\" pond-keyup=\"description\" placeholder=\"Todo Description\">", "</textarea>\n                        </div>\n                        <div class=\"flex items-center justify-center w-full mt-4\">\n                            <button class=\"px-4 py-2 text-sm font-bold text-cyan-100 bg-cyan-500 rounded-lg\" pond-click=\"addTodo\">", "</button>\n                        </div>\n                    </div>\n                </div>\n            </div>"], ["\n            <div class=\"flex flex-col items-center justify-center w-full h-full absolute left-0 top-0 bg-cyan-900 bg-opacity-70\">\n                <div class=\"flex flex-col items-center justify-center w-1/2 h-1/2 bg-cyan-100 rounded-lg\">\n                    <div class=\"flex items-center justify-between w-full px-4 py-2 border-b border-cyan-200\">\n                    <div class=\"text-lg font-bold ", "\">", "</div>\n                        <div class=\"flex items-center justify-center w-8 h-8 mr-4 rounded-full bg-cyan-200\" pond-click=\"closeModal\">\n                            <span class=\"material-symbols-outlined text-cyan-700 cursor-pointer\">close</span>\n                        </div>\n                    </div>\n                    <div class=\"flex flex-col items-center justify-center w-full px-4 py-2\">\n                        <div class=\"flex flex-col w-full\">\n                            <label class=\"text-sm font-bold text-cyan-900\">Todo Title</label>\n                            <input class=\"w-full px-4 py-2 mt-2 border ", " rounded-lg\" pond-keyup=\"title\" type=\"text\" placeholder=\"Todo Title\" value=\"", "\">\n                        </div>\n                        <div class=\"flex flex-col w-full mt-4\">\n                            <label class=\"text-sm font-bold text-cyan-900\">Todo Description</label>\n                            <textarea class=\"w-full px-4 py-2 mt-2 border ", " rounded-lg\" pond-keyup=\"description\" placeholder=\"Todo Description\">", "</textarea>\n                        </div>\n                        <div class=\"flex items-center justify-center w-full mt-4\">\n                            <button class=\"px-4 py-2 text-sm font-bold text-cyan-100 bg-cyan-500 rounded-lg\" pond-click=\"addTodo\">", "</button>\n                        </div>\n                    </div>\n                </div>\n            </div>"])), this.error ? 'error' : 'text-cyan-900', this.error ? this.error : !!this.id ? 'Edit Todo' : 'Add Todo', this.error ? 'error' : 'border-cyan-200', this.text, this.error ? 'error' : 'border-cyan-200', this.description, this.id ? 'Edit Todo' : 'Add Todo');
     }
 });
 var templateObject_1;

@@ -8,7 +8,7 @@ interface IndexContext {
     notifications: string[];
 }
 interface SearchContext {
-    query: string | null;
+    query: string;
 }
 /**
  * This is the context manager for the index page button
@@ -23,7 +23,9 @@ interface SearchContext {
  * The consumer is used to modify the state of the context from anywhere
  * To use the consumer, you must first import it from file where it was created
  */
-declare const homeConsumer: import("pondsocket").ContextConsumer<IndexContext>;
+declare const homeConsumer: import("pondsocket/live").ContextConsumer<{
+    name: string;
+}>;
 /**
  * This is the context manager for the search bar
  * The create context function returns a tuple of the consumer and provider
@@ -37,7 +39,7 @@ declare const homeConsumer: import("pondsocket").ContextConsumer<IndexContext>;
  * The consumer is used to modify the state of the context from anywhere
  * To use the consumer, you must first import it from file where it was created
  */
-declare const searchConsumer: import("pondsocket").ContextConsumer<SearchContext>;
+declare const searchConsumer: import("pondsocket/live").ContextConsumer<SearchContext>;
 /**
  * This is the context manager for the to-do provider
  * The create context function returns a tuple of the consumer and provider
@@ -51,7 +53,7 @@ declare const searchConsumer: import("pondsocket").ContextConsumer<SearchContext
  * The consumer is used to modify the state of the context from anywhere
  * To use the consumer, you must first import it from file where it was created
  */
-declare const todoConsumer: import("pondsocket").ContextConsumer<{
+declare const todoConsumer: import("pondsocket/live").ContextConsumer<{
     todo: string;
     action: boolean;
 }>;
@@ -120,5 +122,5 @@ declare const todoConsumer: import("pondsocket").ContextConsumer<{
  *
  * There are a lot more properties that can be used to trigger events on the client, check the documentation for more info
  */
-export declare const Index: import("pondsocket").Constructor<import("pondsocket").LiveComponent<IndexContext>>;
+export declare const Index: import("pondsocket/live").LiveComponent<IndexContext>;
 export { homeConsumer, searchConsumer, todoConsumer };

@@ -1,6 +1,6 @@
-import {createContext, html, LiveFactory} from "pondsocket";
+import {createContext, html, LiveFactory} from "pondsocket/live";
 import {TodoHome} from "./TodoHome";
-import {elapsedProvider, ReminderManger, database, ReminderManagerType} from "../controller/database";
+import {elapsedProvider, elapsedConsumer, ReminderManger, database, ReminderManagerType} from "../controller/database";
 import {ReminderHome} from "./ReminderHome";
 
 interface IndexContext {
@@ -13,7 +13,7 @@ interface IndexContext {
 }
 
 interface SearchContext {
-    query: string | null;
+    query: string;
 }
 
 /**
@@ -29,7 +29,9 @@ interface SearchContext {
  * The consumer is used to modify the state of the context from anywhere
  * To use the consumer, you must first import it from file where it was created
  */
-const [homeConsumer, homeProvider] = createContext<IndexContext>('IndexContext');
+const [homeConsumer, homeProvider] = createContext<{ name: string }>({
+    name: ''
+});
 
 /**
  * This is the context manager for the search bar
@@ -44,7 +46,9 @@ const [homeConsumer, homeProvider] = createContext<IndexContext>('IndexContext')
  * The consumer is used to modify the state of the context from anywhere
  * To use the consumer, you must first import it from file where it was created
  */
-const [searchConsumer, searchProvider] = createContext<SearchContext>('SearchContext');
+const [searchConsumer, searchProvider] = createContext<SearchContext>({
+    query: ''
+});
 
 /**
  * This is the context manager for the to-do provider
@@ -59,8 +63,10 @@ const [searchConsumer, searchProvider] = createContext<SearchContext>('SearchCon
  * The consumer is used to modify the state of the context from anywhere
  * To use the consumer, you must first import it from file where it was created
  */
-const [todoConsumer, todoProvider] = createContext<{todo: string, action: boolean}>('TodoContext');
-
+const [todoConsumer, todoProvider] = createContext<{todo: string, action: boolean}>({
+    todo: '',
+    action: false
+});
 
 /**
  * This is the main component for the index page
@@ -143,7 +149,7 @@ export const Index = LiveFactory<IndexContext>({
         const todos = database.map(todo => todo.text);
         const reminders = manager.getReminders().filter(reminder => !reminder.completed).map(reminder => reminder.text);
         homeConsumer.assign(socket, {
-            name: null
+            name: '',
         })
 
         /**
@@ -159,38 +165,31 @@ export const Index = LiveFactory<IndexContext>({
         });
     },
 
-    onContextChange(name, provider, context, socket, _router) {
-        if (name === 'IndexContext')
-            /**
-             * The socket.assign function is used to assign a state to the client on this component
-             */
+    onContextChange(context, socket, _router) {
+        homeConsumer.handleContextChange(context, provider => {
             socket.assign({name: provider.name});
+        })
 
-        if (name === 'ElapsedContext')
-            /**
-             * The socket.assign function is used to assign a state to the client on this component
-             */
+        elapsedConsumer.handleContextChange(context, provider => {
             socket.assign({
                 notificationCount: provider.data.size,
                 notifications: Array.from(provider.data.values()).map((notification: any) => notification.elapsed),
-                reminders: context.manager.getReminders().filter(reminder => !reminder.completed).map(reminder => reminder.text)
+                reminders: this.manager.getReminders().filter(reminder => !reminder.completed).map(reminder => reminder.text)
             });
+        });
 
-        if (name === 'TodoContext') {
-            const todos = context.todos.filter(todo => todo !== provider.todo);
+        todoConsumer.handleContextChange(context, provider => {
+            const todos = this.todos.filter(todo => todo !== provider.todo);
             if (provider.action)
                 todos.push(provider.todo);
 
-            /**
-             * The socket.assign function is used to assign a state to the client on this component
-             */
             socket.assign({
                 todos: todos
             });
-        }
+        });
     },
 
-    onEvent(event, _context, socket, _router) {
+    onEvent(event, socket, _router) {
         if (event.type === 'search')
             /**
              * Every global context manager has a function called assigns that can be used to modify the global context.
@@ -198,15 +197,15 @@ export const Index = LiveFactory<IndexContext>({
              * The data object is the data that will be assigned to the global context
              */
             searchConsumer.assign(socket, {
-                query: event.value
+                query: event.value || ''
             })
     },
 
-    onUnmount(context, _socket) {
-        context.manager.unsubscribe();
+    onUnmount() {
+        this.manager?.unsubscribe();
     },
 
-    render(assigns) {
+    render(renderRoutes) {
         return html`
             <div class="container mx-auto">
                 <div class="flex relative justify-between items-center py-4">
@@ -231,13 +230,13 @@ export const Index = LiveFactory<IndexContext>({
                                 <a class="flex items-center focus:outline-none cursor-pointer">
                                     <span class="material-symbols-outlined text-cyan-700 hover:text-cyan-900">notifications</span>
                                     <span class="absolute top-0 right-0 w-4 h-4 bg-cyan-900 rounded-full text-xs text-white text-center bg-red-500"
-                                          style="display: ${assigns.context.notificationCount > 0 ? 'block' : 'none'}">
-                                        ${assigns.context.notificationCount}
+                                          style="display: ${this.notificationCount > 0 ? 'block' : 'none'}">
+                                        ${this.notificationCount}
                                     </span>
                                 </a>
                             </li>
                             <li class="mr-3">
-                                ${assigns.context.name === 'Add Reminder' ? html`
+                                ${this.name === 'Add Reminder' ? html`
                                     <a class="flex overflow-clip items-center justify-center ml-6 w-36 h-10 rounded-lg bg-cyan-900 text-white focus:outline-none hover:bg-cyan-700 drop-shadow-lg hover:drop-shadow-xl"
                                        href="/reminder/addReminder">
                                         <span class="material-symbols-outlined">add</span>
@@ -249,7 +248,7 @@ export const Index = LiveFactory<IndexContext>({
                                 `}
                             </li>
                             <li class="mr-3">
-                                ${assigns.context.name === 'Add Todo' ? html`
+                                ${this.name === 'Add Todo' ? html`
                                     <a class="flex overflow-clip items-center justify-center ml-6 w-36 h-10 rounded-lg bg-cyan-900 text-white focus:outline-none hover:bg-cyan-700 drop-shadow-lg hover:drop-shadow-xl"
                                        href="/todo/addTodo">
                                         <span class="material-symbols-outlined">add</span>
@@ -272,7 +271,7 @@ export const Index = LiveFactory<IndexContext>({
                                 <span class="material-symbols-outlined text-cyan-700 hover:text-cyan-900">event</span>
                             </div>
                         </a>
-                        ${assigns.context.reminders.map(reminder => html`
+                        ${this.reminders.map(reminder => html`
                             <div class="flex items-center justify-between mt-4">
                                 <div class="flex items-center">
                                     <span class="material-symbols-outlined text-cyan-700">event</span>
@@ -289,7 +288,7 @@ export const Index = LiveFactory<IndexContext>({
                                 <span class="material-symbols-outlined text-cyan-700 hover:text-cyan-900">calendar_view_day</span>
                             </div>
                         </a>
-                        ${assigns.context.todos.map(todo => html`
+                        ${this.todos.map(todo => html`
                             <div class="flex items-center justify-between mt-4">
                                 <div class="flex items-center">
                                     <span class="material-symbols-outlined text-cyan-700">calendar_view_day</span>
@@ -306,7 +305,7 @@ export const Index = LiveFactory<IndexContext>({
                                 <span class="material-symbols-outlined text-cyan-700 hover:text-cyan-900">notifications</span>
                             </div>
                         </a>
-                        ${assigns.context.notifications.map(notification => html`
+                        ${this.notifications.map(notification => html`
                             <div class="flex items-center justify-between mt-4">
                                 <div class="flex items-center">
                                     <span class="material-symbols-outlined text-cyan-700">notifications</span>
@@ -321,7 +320,7 @@ export const Index = LiveFactory<IndexContext>({
                   The context during the render contains a function called renderRoutes, 
                   this function can be used to render the nested routes at the current path on the position of the function call
                 -->
-                ${assigns.renderRoutes()}
+                ${renderRoutes()}
 
             </div>
         `;

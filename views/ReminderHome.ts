@@ -1,5 +1,5 @@
-import {Reminder, ReminderManagerType, ReminderManger} from "../controller/database";
-import {html, LiveFactory} from "pondsocket";
+import {elapsedConsumer, Reminder, ReminderManagerType, ReminderManger} from "../controller/database";
+import {html, LiveFactory} from "pondsocket/live";
 import {ReminderCard} from "./ReminderCard";
 import {homeConsumer, searchConsumer} from "./index";
 import {DeleteReminderModal} from "./DeleteReminder";
@@ -108,8 +108,8 @@ export const ReminderHome = LiveFactory<ReminderContext>({
         socket.assign({reminders: manager.getReminders(), manager});
     },
 
-    onContextChange(name: string, provider, context, socket) {
-        if (name === 'ElapsedContext') {
+    onContextChange(context, socket) {
+        elapsedConsumer.handleContextChange(context, _ => {
             /**
              * Every global context manager has a function called get that can be used to get the current value of the global context.
              * The get function takes in a socket object
@@ -122,21 +122,24 @@ export const ReminderHome = LiveFactory<ReminderContext>({
                     /**
                      * The socket.assign function is used to assign a state to the client on this component
                      */
-                    socket.assign({reminders: context.manager.getReminders()});
+                    socket.assign({reminders: this.manager.getReminders()});
 
                 else {
-                    const reminders = context.manager.getReminders().filter(reminder => reminder.text.toLowerCase().includes(value.query!.toLowerCase()));
+                    const reminders = this.manager.getReminders().filter(reminder => reminder.text.toLowerCase().includes(value.query!.toLowerCase()));
                     /**
                      * The socket.assign function is used to assign a state to the client on this component
                      */
                     socket.assign({reminders});
                 }
             }
-        }
+        })
 
-        if (name === 'SearchContext') {
+        searchConsumer.handleContextChange(context, provider => {
+            if (provider.query === null)
+                return;
+
             if (provider.query !== '') {
-                const reminders = context.manager.getReminders().filter(reminder => reminder.text.toLowerCase().includes(provider.query.toLowerCase()));
+                const reminders = this.manager.getReminders().filter(reminder => reminder.text.toLowerCase().includes(provider.query!.toLowerCase()));
                 /**
                  * The socket.assign function is used to assign a state to the client on this component
                  */
@@ -147,36 +150,36 @@ export const ReminderHome = LiveFactory<ReminderContext>({
                  * The socket.assign function is used to assign a state to the client on this component
                  */
                 socket.assign({
-                    reminders: context.manager.getReminders()
+                    reminders: this.manager.getReminders()
                 });
-        }
+        });
     },
 
-    onEvent(event, context, socket) {
+    onEvent(event, socket) {
         if (event.type === 'toggleComplete') {
-            const reminder = context.manager.findReminder(Number(event.dataId));
+            const reminder = this.manager.findReminder(Number(event.dataId));
             if (reminder) {
                 reminder.completed = !reminder.completed;
-                context.manager.updateReminder(reminder.id, reminder);
+                this.manager.updateReminder(reminder.id, reminder);
                 /**
                  * The socket.assign function is used to assign a state to the client on this component
                  */
-                socket.assign({reminders: context.manager.getReminders()});
+                socket.assign({reminders: this.manager.getReminders()});
             }
         }
     },
 
-    render(context) {
+    render(renderRoutes) {
         return html`
             <div class="flex flex-col mt-6">
-                ${context.context.reminders.map(reminder => ReminderCard(reminder))}
+                ${this.reminders.map(reminder => ReminderCard(reminder))}
             </div>
             
             <!--
               The context during the render contains a function called renderRoutes, 
               this function can be used to render the nested routes at the current path on the position of the function call
             -->
-            ${context.renderRoutes()}
+            ${renderRoutes()}
         `;
     }
 })

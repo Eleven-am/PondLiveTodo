@@ -69,5 +69,5 @@ interface AddTodoAssigns {
  *
  * There are a lot more properties that can be used to trigger events on the client, check the documentation for more info
  */
-export declare const UpdateTodoModal: import("pondsocket").Constructor<import("pondsocket").LiveComponent<AddTodoAssigns>>;
+export declare const UpdateTodoModal: import("pondsocket/live").LiveComponent<AddTodoAssigns>;
 export {};

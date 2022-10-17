@@ -1,4 +1,4 @@
-import {html, LiveFactory} from "pondsocket";
+import {html, LiveFactory} from "pondsocket/live";
 import {ReminderManger} from "../controller/database";
 
 /**
@@ -91,7 +91,7 @@ export const DeleteReminderModal = LiveFactory<{id: number}>({
         })
     },
 
-    onEvent(event, _context, socket, router) {
+    onEvent(event, socket, router) {
         if (event.type === 'closeModal')
             /**
              * The router.navigateTo function is used to navigate to a different page

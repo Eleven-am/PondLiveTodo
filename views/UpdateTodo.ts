@@ -1,4 +1,4 @@
-import {html, LiveFactory} from "pondsocket";
+import {html, LiveFactory} from "pondsocket/live";
 import {database} from "../controller/database";
 import {todoConsumer} from "./index";
 
@@ -113,7 +113,7 @@ export const UpdateTodoModal = LiveFactory<AddTodoAssigns>({
         });
     },
 
-    onEvent(event, context, socket , router): void | Promise<void> {
+    onEvent(event, socket , router): void | Promise<void> {
         if (event.type === 'closeModal')
             /**
              * The router.navigateTo function is used to navigate to a different page
@@ -122,34 +122,34 @@ export const UpdateTodoModal = LiveFactory<AddTodoAssigns>({
 
         if (event.type === 'title')
             socket.assign({
-                text: event.value
+                text: event.value || ''
             })
 
         if (event.type === 'description')
             socket.assign({
-                description: event.value
+                description: event.value || ''
             })
 
         if (event.type === 'addTodo') {
-            if (!context.text || !context.description) {
+            if (!this.text || !this.description) {
                 socket.assign({
                     error: 'Please fill out all fields'
                 })
                 return;
             }
 
-            if (context.id) {
-                const todo = database.find(todo => todo.id === context.id);
+            if (this.id) {
+                const todo = database.find(todo => todo.id === this.id);
                 if (todo) {
-                    todo.text = context.text;
-                    todo.description = context.description;
+                    todo.text = this.text;
+                    todo.description = this.description;
                 }
 
             } else
                 database.push({
                     id: database.length + 1,
-                    text: context.text,
-                    description: context.description,
+                    text: this.text,
+                    description: this.description,
                     completed: false,
                     date: new Date()
                 })
@@ -159,18 +159,18 @@ export const UpdateTodoModal = LiveFactory<AddTodoAssigns>({
              */
             router.navigateTo('/todo');
             todoConsumer.assign(socket, {
-                todo: context.text,
+                todo: this.text,
                 action: true
             })
         }
     },
 
-    render(socket, _classes) {
+    render() {
         return html`
             <div class="flex flex-col items-center justify-center w-full h-full absolute left-0 top-0 bg-cyan-900 bg-opacity-70">
                 <div class="flex flex-col items-center justify-center w-1/2 h-1/2 bg-cyan-100 rounded-lg">
                     <div class="flex items-center justify-between w-full px-4 py-2 border-b border-cyan-200">
-                    <div class="text-lg font-bold ${socket.context.error ? 'error': 'text-cyan-900'}">${socket.context.error ? socket.context.error : !!socket.context.id ? 'Edit Todo': 'Add Todo'}</div>
+                    <div class="text-lg font-bold ${this.error ? 'error': 'text-cyan-900'}">${this.error ? this.error : !!this.id ? 'Edit Todo': 'Add Todo'}</div>
                         <div class="flex items-center justify-center w-8 h-8 mr-4 rounded-full bg-cyan-200" pond-click="closeModal">
                             <span class="material-symbols-outlined text-cyan-700 cursor-pointer">close</span>
                         </div>
@@ -178,14 +178,14 @@ export const UpdateTodoModal = LiveFactory<AddTodoAssigns>({
                     <div class="flex flex-col items-center justify-center w-full px-4 py-2">
                         <div class="flex flex-col w-full">
                             <label class="text-sm font-bold text-cyan-900">Todo Title</label>
-                            <input class="w-full px-4 py-2 mt-2 border ${socket.context.error ? 'error': 'border-cyan-200'} rounded-lg" pond-keyup="title" type="text" placeholder="Todo Title" value="${socket.context.text}">
+                            <input class="w-full px-4 py-2 mt-2 border ${this.error ? 'error': 'border-cyan-200'} rounded-lg" pond-keyup="title" type="text" placeholder="Todo Title" value="${this.text}">
                         </div>
                         <div class="flex flex-col w-full mt-4">
                             <label class="text-sm font-bold text-cyan-900">Todo Description</label>
-                            <textarea class="w-full px-4 py-2 mt-2 border ${socket.context.error ? 'error': 'border-cyan-200'} rounded-lg" pond-keyup="description" placeholder="Todo Description">${socket.context.description}</textarea>
+                            <textarea class="w-full px-4 py-2 mt-2 border ${this.error ? 'error': 'border-cyan-200'} rounded-lg" pond-keyup="description" placeholder="Todo Description">${this.description}</textarea>
                         </div>
                         <div class="flex items-center justify-center w-full mt-4">
-                            <button class="px-4 py-2 text-sm font-bold text-cyan-100 bg-cyan-500 rounded-lg" pond-click="addTodo">${socket.context.id ? 'Edit Todo': 'Add Todo'}</button>
+                            <button class="px-4 py-2 text-sm font-bold text-cyan-100 bg-cyan-500 rounded-lg" pond-click="addTodo">${this.id ? 'Edit Todo': 'Add Todo'}</button>
                         </div>
                     </div>
                 </div>

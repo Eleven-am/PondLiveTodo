@@ -20,6 +20,6 @@
     "typescript": "^4.8.4"
   },
   "dependencies": {
-    "pondsocket": "^0.1.108"
+    "pondsocket": "^0.1.150"
   }
 }

@@ -1,5 +1,5 @@
 import {Todo} from "../controller/database";
-import {html} from "pondsocket";
+import {html} from "pondsocket/live";
 
 /**
  * Sometimes it is useful to have a component that is not a live component

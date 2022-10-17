@@ -1,4 +1,10 @@
-import { LiveSocket } from "pondsocket";
+import { LiveSocket } from "pondsocket/live";
+interface ElapsedContext {
+    data: Set<{
+        id: number;
+        elapsed: string;
+    }>;
+}
 /**
  * This is the context manager for the elapsed reminders
  * The create context function returns a tuple of the consumer and provider
@@ -12,7 +18,7 @@ import { LiveSocket } from "pondsocket";
  * The consumer is used to modify the state of the context from anywhere
  * To use the consumer, you must first import it from file where it was created
  */
-declare const elapsedProvider: import("pondsocket").ContextProvider;
+declare const elapsedConsumer: import("pondsocket/live").ContextConsumer<ElapsedContext>, elapsedProvider: import("pondsocket/live").ContextProvider;
 export interface Todo {
     id: number;
     text: string;
@@ -41,4 +47,4 @@ export interface ReminderManagerType {
 export declare const ReminderManger: {
     getManager: (socket: LiveSocket<any>) => ReminderManagerType;
 };
-export { elapsedProvider };
+export { elapsedProvider, elapsedConsumer };

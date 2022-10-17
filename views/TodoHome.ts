@@ -1,9 +1,9 @@
-import {html, LiveFactory} from "pondsocket";
+import {html, LiveFactory} from "pondsocket/live";
 import {database, Todo} from "../controller/database";
 import {UpdateTodoModal} from "./UpdateTodo";
 import {TodoCard} from "./TodoCard";
 import {DeleteTodoModal} from "./DeleteTodo";
-import {homeConsumer} from "./index";
+import {homeConsumer, searchConsumer} from "./index";
 
 interface TodoContext {
     todos: Todo[];
@@ -105,8 +105,8 @@ export const TodoHome = LiveFactory<TodoContext>({
         });
     },
 
-    onContextChange(name: string, provider: any, _socketContext, socket) {
-        if (name === 'SearchContext') {
+    onContextChange(context, socket) {
+        searchConsumer.handleContextChange(context, provider => {
             if (provider.query !== '') {
                 const todos = database.filter(todo => todo.text.toLowerCase().includes(provider.query.toLowerCase()));
                 /**
@@ -119,14 +119,14 @@ export const TodoHome = LiveFactory<TodoContext>({
                  * The socket.assign function is used to assign a state to the client on this component
                  */
                 socket.assign({todos: database});
-        }
+        })
     },
 
-    onEvent(event, context, socket) {
+    onEvent(event, socket) {
         if (event.type === 'toggleComplete') {
             const todo = database.find(todo => todo.id === Number(event.dataId));
-            const innerTodos = context.todos.filter(todo => todo.id !== Number(event.dataId));
-            const innerIndex = context.todos.findIndex(todo => todo.id === Number(event.dataId));
+            const innerTodos = this.todos.filter(todo => todo.id !== Number(event.dataId));
+            const innerIndex = this.todos.findIndex(todo => todo.id === Number(event.dataId));
             if (todo) {
                 todo.completed = !todo.completed;
                 innerTodos.splice(innerIndex, 0, todo);
@@ -138,17 +138,17 @@ export const TodoHome = LiveFactory<TodoContext>({
         }
     },
 
-    render(context) {
+    render(renderRoutes) {
         return html`
             <div class="flex flex-col mt-6">
-                ${context.context.todos.map(todo => TodoCard(todo))}
+                ${this.todos.map(todo => TodoCard(todo))}
             </div>
 
             <!--
               The context during the render contains a function called renderRoutes, 
               this function can be used to render the nested routes at the current path on the position of the function call
             -->
-            ${context.renderRoutes()}
+            ${renderRoutes()}
         `;
     }
 })

@@ -1,4 +1,4 @@
-import {createContext, LiveSocket} from "pondsocket";
+import {createContext, LiveSocket} from "pondsocket/live";
 
 interface ElapsedContext {
     data: Set<{
@@ -20,7 +20,9 @@ interface ElapsedContext {
  * The consumer is used to modify the state of the context from anywhere
  * To use the consumer, you must first import it from file where it was created
  */
-const [elapsedConsumer, elapsedProvider] = createContext<ElapsedContext>('ElapsedContext');
+const [elapsedConsumer, elapsedProvider] = createContext<ElapsedContext>({
+    data: new Set()
+});
 
 export interface Todo {
     id: number;
@@ -165,4 +167,4 @@ const ManagerFactory = () => {
 
 export const ReminderManger = ManagerFactory();
 
-export {elapsedProvider};
+export {elapsedProvider, elapsedConsumer};

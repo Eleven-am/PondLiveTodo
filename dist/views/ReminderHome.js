@@ -6,7 +6,7 @@ var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cook
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReminderHome = void 0;
 var database_1 = require("../controller/database");
-var pondsocket_1 = require("pondsocket");
+var live_1 = require("pondsocket/live");
 var ReminderCard_1 = require("./ReminderCard");
 var index_1 = require("./index");
 var DeleteReminder_1 = require("./DeleteReminder");
@@ -76,7 +76,7 @@ var UpdateRminder_1 = require("./UpdateRminder");
  *
  * There are a lot more properties that can be used to trigger events on the client, check the documentation for more info
  */
-exports.ReminderHome = (0, pondsocket_1.LiveFactory)({
+exports.ReminderHome = (0, live_1.LiveFactory)({
     routes: [{
             path: '/deleteReminder/:id',
             Component: DeleteReminder_1.DeleteReminderModal
@@ -106,32 +106,35 @@ exports.ReminderHome = (0, pondsocket_1.LiveFactory)({
          */
         socket.assign({ reminders: manager.getReminders(), manager: manager });
     },
-    onContextChange: function (name, provider, context, socket) {
-        if (name === 'ElapsedContext') {
+    onContextChange: function (context, socket) {
+        var _this = this;
+        database_1.elapsedConsumer.handleContextChange(context, function (_) {
             /**
              * Every global context manager has a function called get that can be used to get the current value of the global context.
              * The get function takes in a socket object
              * The get function returns the current value of the global context
              */
-            var value_1 = index_1.searchConsumer.get(socket);
-            if (value_1.query) {
-                if (value_1.query === '')
+            var value = index_1.searchConsumer.get(socket);
+            if (value.query) {
+                if (value.query === '')
                     /**
                      * The socket.assign function is used to assign a state to the client on this component
                      */
-                    socket.assign({ reminders: context.manager.getReminders() });
+                    socket.assign({ reminders: _this.manager.getReminders() });
                 else {
-                    var reminders = context.manager.getReminders().filter(function (reminder) { return reminder.text.toLowerCase().includes(value_1.query.toLowerCase()); });
+                    var reminders = _this.manager.getReminders().filter(function (reminder) { return reminder.text.toLowerCase().includes(value.query.toLowerCase()); });
                     /**
                      * The socket.assign function is used to assign a state to the client on this component
                      */
                     socket.assign({ reminders: reminders });
                 }
             }
-        }
-        if (name === 'SearchContext') {
+        });
+        index_1.searchConsumer.handleContextChange(context, function (provider) {
+            if (provider.query === null)
+                return;
             if (provider.query !== '') {
-                var reminders = context.manager.getReminders().filter(function (reminder) { return reminder.text.toLowerCase().includes(provider.query.toLowerCase()); });
+                var reminders = _this.manager.getReminders().filter(function (reminder) { return reminder.text.toLowerCase().includes(provider.query.toLowerCase()); });
                 /**
                  * The socket.assign function is used to assign a state to the client on this component
                  */
@@ -142,25 +145,25 @@ exports.ReminderHome = (0, pondsocket_1.LiveFactory)({
                  * The socket.assign function is used to assign a state to the client on this component
                  */
                 socket.assign({
-                    reminders: context.manager.getReminders()
+                    reminders: _this.manager.getReminders()
                 });
-        }
+        });
     },
-    onEvent: function (event, context, socket) {
+    onEvent: function (event, socket) {
         if (event.type === 'toggleComplete') {
-            var reminder = context.manager.findReminder(Number(event.dataId));
+            var reminder = this.manager.findReminder(Number(event.dataId));
             if (reminder) {
                 reminder.completed = !reminder.completed;
-                context.manager.updateReminder(reminder.id, reminder);
+                this.manager.updateReminder(reminder.id, reminder);
                 /**
                  * The socket.assign function is used to assign a state to the client on this component
                  */
-                socket.assign({ reminders: context.manager.getReminders() });
+                socket.assign({ reminders: this.manager.getReminders() });
             }
         }
     },
-    render: function (context) {
-        return (0, pondsocket_1.html)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n            <div class=\"flex flex-col mt-6\">\n                ", "\n            </div>\n            \n            <!--\n              The context during the render contains a function called renderRoutes, \n              this function can be used to render the nested routes at the current path on the position of the function call\n            -->\n            ", "\n        "], ["\n            <div class=\"flex flex-col mt-6\">\n                ", "\n            </div>\n            \n            <!--\n              The context during the render contains a function called renderRoutes, \n              this function can be used to render the nested routes at the current path on the position of the function call\n            -->\n            ", "\n        "])), context.context.reminders.map(function (reminder) { return (0, ReminderCard_1.ReminderCard)(reminder); }), context.renderRoutes());
+    render: function (renderRoutes) {
+        return (0, live_1.html)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n            <div class=\"flex flex-col mt-6\">\n                ", "\n            </div>\n            \n            <!--\n              The context during the render contains a function called renderRoutes, \n              this function can be used to render the nested routes at the current path on the position of the function call\n            -->\n            ", "\n        "], ["\n            <div class=\"flex flex-col mt-6\">\n                ", "\n            </div>\n            \n            <!--\n              The context during the render contains a function called renderRoutes, \n              this function can be used to render the nested routes at the current path on the position of the function call\n            -->\n            ", "\n        "])), this.reminders.map(function (reminder) { return (0, ReminderCard_1.ReminderCard)(reminder); }), renderRoutes());
     }
 });
 var templateObject_1;

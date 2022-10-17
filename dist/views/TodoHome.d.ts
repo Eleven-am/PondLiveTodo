@@ -67,5 +67,5 @@ interface TodoContext {
  *
  * There are a lot more properties that can be used to trigger events on the client, check the documentation for more info
  */
-export declare const TodoHome: import("pondsocket").Constructor<import("pondsocket").LiveComponent<TodoContext>>;
+export declare const TodoHome: import("pondsocket/live").LiveComponent<TodoContext>;
 export {};

@@ -1,4 +1,4 @@
-import {html, LiveFactory} from "pondsocket";
+import {html, LiveFactory} from "pondsocket/live";
 import {Reminder, ReminderManger, ReminderManagerType} from "../controller/database";
 
 interface UpdateReminderAssigns {
@@ -75,7 +75,7 @@ interface UpdateReminderAssigns {
 export const UpdateReminderModal = LiveFactory<UpdateReminderAssigns>({
     routes: [],
 
-    mount: (context, socket, router) => {
+    mount(context, socket, router) {
         const manager = ReminderManger.getManager(socket);
 
         if (context.params.id) {
@@ -125,7 +125,7 @@ export const UpdateReminderModal = LiveFactory<UpdateReminderAssigns>({
         }
     },
 
-    onEvent(event, context, socket, router) {
+    onEvent(event, socket, router) {
         if (event.type === 'closeModal')
             /**
              * The router.navigateTo function is used to navigate to a different page
@@ -134,7 +134,7 @@ export const UpdateReminderModal = LiveFactory<UpdateReminderAssigns>({
 
         if (event.type === 'title')
             socket.assign({
-                data: {...context.data, text: event.value}
+                data: {...this.data, text: event.value!}
             })
 
         if (event.type === 'description')
@@ -142,21 +142,21 @@ export const UpdateReminderModal = LiveFactory<UpdateReminderAssigns>({
              * The socket.assign function is used to assign a state to the client on this component
              */
             socket.assign({
-                data: {...context.data, description: event.value}
+                data: {...this.data, description: event.value!}
             })
 
         if (event.type === 'date') {
-            const date = new Date(event.value);
+            const date = new Date(event.value!);
             /**
              * The socket.assign function is used to assign a state to the client on this component
              */
             socket.assign({
-                data: {...context.data, date: date}
+                data: {...this.data, date: date}
             })
         }
 
         if (event.type === 'addReminder') {
-            if (!context.data.text || !context.data.description) {
+            if (!this.data.text || !this.data.description) {
                 /**
                  * The socket.assign function is used to assign a state to the client on this component
                  */
@@ -166,10 +166,10 @@ export const UpdateReminderModal = LiveFactory<UpdateReminderAssigns>({
                 return;
             }
 
-            if (context.data.id)
-                context.manager.updateReminder(context.data.id, context.data);
+            if (this.data.id)
+                this.manager.updateReminder(this.data.id, this.data);
             else
-                context.manager.addReminder(context.data);
+                this.manager.addReminder(this.data);
 
             /**
              * The router.navigateTo function is used to navigate to a different page
@@ -178,12 +178,12 @@ export const UpdateReminderModal = LiveFactory<UpdateReminderAssigns>({
         }
     },
 
-    render(socket) {
+    render() {
         return html`
             <div class="flex flex-col items-center justify-center w-full h-full absolute left-0 top-0 bg-cyan-900 bg-opacity-70">
                 <div class="flex flex-col items-center justify-center w-1/2 h-2/3 bg-cyan-100 rounded-lg">
                     <div class="flex items-center justify-between w-full px-4 py-2 border-b border-cyan-200">
-                    <div class="text-lg font-bold ${socket.context.error ? 'error': 'text-cyan-900'}">${socket.context.error ? socket.context.error : !!socket.context.data.id ? 'Edit Todo': 'Add Todo'}</div>
+                    <div class="text-lg font-bold ${this.error ? 'error': 'text-cyan-900'}">${this.error ? this.error : !!this.data.id ? 'Edit Todo': 'Add Todo'}</div>
                         <div class="flex items-center justify-center w-8 h-8 mr-4 rounded-full bg-cyan-200" pond-click="closeModal">
                             <span class="material-symbols-outlined text-cyan-700 cursor-pointer">close</span>
                         </div>
@@ -191,19 +191,19 @@ export const UpdateReminderModal = LiveFactory<UpdateReminderAssigns>({
                     <div class="flex flex-col items-center justify-center w-full px-4 py-2">
                         <div class="flex flex-col w-full">
                             <label class="text-sm font-bold text-cyan-900">Reminder Title</label>
-                            <input class="w-full px-4 py-2 mt-2 border ${socket.context.error ? 'error': 'border-cyan-200'} rounded-lg" pond-keyup="title" type="text" placeholder="Todo Title" value="${socket.context.data.text}">
+                            <input class="w-full px-4 py-2 mt-2 border ${this.error ? 'error': 'border-cyan-200'} rounded-lg" pond-keyup="title" type="text" placeholder="Todo Title" value="${this.data.text}">
                         </div>
                         <div class="flex flex-col w-full mt-4">
                             <label class="text-sm font-bold text-cyan-900">Reminder Description</label>
-                            <textarea class="w-full px-4 py-2 mt-2 border ${socket.context.error ? 'error': 'border-cyan-200'} rounded-lg" pond-keyup="description" placeholder="Todo Description">${socket.context.data.description}</textarea>
+                            <textarea class="w-full px-4 py-2 mt-2 border ${this.error ? 'error': 'border-cyan-200'} rounded-lg" pond-keyup="description" placeholder="Todo Description">${this.data.description}</textarea>
                         </div>
                         <div class="flex flex-col w-full mt-4">
                             <label class="text-sm font-bold text-cyan-900">Reminder Due Date</label>
-                            <input class="w-full px-4 py-2 mt-2 border ${socket.context.error ? 'error': 'border-cyan-200'} rounded-lg" pond-keyup="date" type="date" value="${socket.context.data.date.toISOString().split('T')[0]}">
+                            <input class="w-full px-4 py-2 mt-2 border ${this.error ? 'error': 'border-cyan-200'} rounded-lg" pond-keyup="date" type="date" value="${this.data.date.toISOString().split('T')[0]}">
                         </div>
                         <div class="flex items-center justify-center w-full mt-4">
                             <button class="px-4 py-2 text-sm font-bold text-cyan-100 bg-cyan-500 rounded-lg" pond-click="addReminder">
-                                ${socket.context.data.id ? 'Edit Reminder': 'Add Reminder'}
+                                ${this.data.id ? 'Edit Reminder': 'Add Reminder'}
                             </button>
                         </div>
                     </div>

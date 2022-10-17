@@ -16,7 +16,7 @@ var __assign = (this && this.__assign) || function () {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateReminderModal = void 0;
-var pondsocket_1 = require("pondsocket");
+var live_1 = require("pondsocket/live");
 var database_1 = require("../controller/database");
 /**
  * This is the main component for the index page
@@ -83,7 +83,7 @@ var database_1 = require("../controller/database");
  *
  * There are a lot more properties that can be used to trigger events on the client, check the documentation for more info
  */
-exports.UpdateReminderModal = (0, pondsocket_1.LiveFactory)({
+exports.UpdateReminderModal = (0, live_1.LiveFactory)({
     routes: [],
     mount: function (context, socket, router) {
         var manager = database_1.ReminderManger.getManager(socket);
@@ -131,7 +131,7 @@ exports.UpdateReminderModal = (0, pondsocket_1.LiveFactory)({
             });
         }
     },
-    onEvent: function (event, context, socket, router) {
+    onEvent: function (event, socket, router) {
         if (event.type === 'closeModal')
             /**
              * The router.navigateTo function is used to navigate to a different page
@@ -139,14 +139,14 @@ exports.UpdateReminderModal = (0, pondsocket_1.LiveFactory)({
             router.navigateTo('/reminder');
         if (event.type === 'title')
             socket.assign({
-                data: __assign(__assign({}, context.data), { text: event.value })
+                data: __assign(__assign({}, this.data), { text: event.value })
             });
         if (event.type === 'description')
             /**
              * The socket.assign function is used to assign a state to the client on this component
              */
             socket.assign({
-                data: __assign(__assign({}, context.data), { description: event.value })
+                data: __assign(__assign({}, this.data), { description: event.value })
             });
         if (event.type === 'date') {
             var date = new Date(event.value);
@@ -154,11 +154,11 @@ exports.UpdateReminderModal = (0, pondsocket_1.LiveFactory)({
              * The socket.assign function is used to assign a state to the client on this component
              */
             socket.assign({
-                data: __assign(__assign({}, context.data), { date: date })
+                data: __assign(__assign({}, this.data), { date: date })
             });
         }
         if (event.type === 'addReminder') {
-            if (!context.data.text || !context.data.description) {
+            if (!this.data.text || !this.data.description) {
                 /**
                  * The socket.assign function is used to assign a state to the client on this component
                  */
@@ -167,18 +167,18 @@ exports.UpdateReminderModal = (0, pondsocket_1.LiveFactory)({
                 });
                 return;
             }
-            if (context.data.id)
-                context.manager.updateReminder(context.data.id, context.data);
+            if (this.data.id)
+                this.manager.updateReminder(this.data.id, this.data);
             else
-                context.manager.addReminder(context.data);
+                this.manager.addReminder(this.data);
             /**
              * The router.navigateTo function is used to navigate to a different page
              */
             router.navigateTo('/reminder');
         }
     },
-    render: function (socket) {
-        return (0, pondsocket_1.html)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n            <div class=\"flex flex-col items-center justify-center w-full h-full absolute left-0 top-0 bg-cyan-900 bg-opacity-70\">\n                <div class=\"flex flex-col items-center justify-center w-1/2 h-2/3 bg-cyan-100 rounded-lg\">\n                    <div class=\"flex items-center justify-between w-full px-4 py-2 border-b border-cyan-200\">\n                    <div class=\"text-lg font-bold ", "\">", "</div>\n                        <div class=\"flex items-center justify-center w-8 h-8 mr-4 rounded-full bg-cyan-200\" pond-click=\"closeModal\">\n                            <span class=\"material-symbols-outlined text-cyan-700 cursor-pointer\">close</span>\n                        </div>\n                    </div>\n                    <div class=\"flex flex-col items-center justify-center w-full px-4 py-2\">\n                        <div class=\"flex flex-col w-full\">\n                            <label class=\"text-sm font-bold text-cyan-900\">Reminder Title</label>\n                            <input class=\"w-full px-4 py-2 mt-2 border ", " rounded-lg\" pond-keyup=\"title\" type=\"text\" placeholder=\"Todo Title\" value=\"", "\">\n                        </div>\n                        <div class=\"flex flex-col w-full mt-4\">\n                            <label class=\"text-sm font-bold text-cyan-900\">Reminder Description</label>\n                            <textarea class=\"w-full px-4 py-2 mt-2 border ", " rounded-lg\" pond-keyup=\"description\" placeholder=\"Todo Description\">", "</textarea>\n                        </div>\n                        <div class=\"flex flex-col w-full mt-4\">\n                            <label class=\"text-sm font-bold text-cyan-900\">Reminder Due Date</label>\n                            <input class=\"w-full px-4 py-2 mt-2 border ", " rounded-lg\" pond-keyup=\"date\" type=\"date\" value=\"", "\">\n                        </div>\n                        <div class=\"flex items-center justify-center w-full mt-4\">\n                            <button class=\"px-4 py-2 text-sm font-bold text-cyan-100 bg-cyan-500 rounded-lg\" pond-click=\"addReminder\">\n                                ", "\n                            </button>\n                        </div>\n                    </div>\n                </div>\n            </div>"], ["\n            <div class=\"flex flex-col items-center justify-center w-full h-full absolute left-0 top-0 bg-cyan-900 bg-opacity-70\">\n                <div class=\"flex flex-col items-center justify-center w-1/2 h-2/3 bg-cyan-100 rounded-lg\">\n                    <div class=\"flex items-center justify-between w-full px-4 py-2 border-b border-cyan-200\">\n                    <div class=\"text-lg font-bold ", "\">", "</div>\n                        <div class=\"flex items-center justify-center w-8 h-8 mr-4 rounded-full bg-cyan-200\" pond-click=\"closeModal\">\n                            <span class=\"material-symbols-outlined text-cyan-700 cursor-pointer\">close</span>\n                        </div>\n                    </div>\n                    <div class=\"flex flex-col items-center justify-center w-full px-4 py-2\">\n                        <div class=\"flex flex-col w-full\">\n                            <label class=\"text-sm font-bold text-cyan-900\">Reminder Title</label>\n                            <input class=\"w-full px-4 py-2 mt-2 border ", " rounded-lg\" pond-keyup=\"title\" type=\"text\" placeholder=\"Todo Title\" value=\"", "\">\n                        </div>\n                        <div class=\"flex flex-col w-full mt-4\">\n                            <label class=\"text-sm font-bold text-cyan-900\">Reminder Description</label>\n                            <textarea class=\"w-full px-4 py-2 mt-2 border ", " rounded-lg\" pond-keyup=\"description\" placeholder=\"Todo Description\">", "</textarea>\n                        </div>\n                        <div class=\"flex flex-col w-full mt-4\">\n                            <label class=\"text-sm font-bold text-cyan-900\">Reminder Due Date</label>\n                            <input class=\"w-full px-4 py-2 mt-2 border ", " rounded-lg\" pond-keyup=\"date\" type=\"date\" value=\"", "\">\n                        </div>\n                        <div class=\"flex items-center justify-center w-full mt-4\">\n                            <button class=\"px-4 py-2 text-sm font-bold text-cyan-100 bg-cyan-500 rounded-lg\" pond-click=\"addReminder\">\n                                ", "\n                            </button>\n                        </div>\n                    </div>\n                </div>\n            </div>"])), socket.context.error ? 'error' : 'text-cyan-900', socket.context.error ? socket.context.error : !!socket.context.data.id ? 'Edit Todo' : 'Add Todo', socket.context.error ? 'error' : 'border-cyan-200', socket.context.data.text, socket.context.error ? 'error' : 'border-cyan-200', socket.context.data.description, socket.context.error ? 'error' : 'border-cyan-200', socket.context.data.date.toISOString().split('T')[0], socket.context.data.id ? 'Edit Reminder' : 'Add Reminder');
+    render: function () {
+        return (0, live_1.html)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n            <div class=\"flex flex-col items-center justify-center w-full h-full absolute left-0 top-0 bg-cyan-900 bg-opacity-70\">\n                <div class=\"flex flex-col items-center justify-center w-1/2 h-2/3 bg-cyan-100 rounded-lg\">\n                    <div class=\"flex items-center justify-between w-full px-4 py-2 border-b border-cyan-200\">\n                    <div class=\"text-lg font-bold ", "\">", "</div>\n                        <div class=\"flex items-center justify-center w-8 h-8 mr-4 rounded-full bg-cyan-200\" pond-click=\"closeModal\">\n                            <span class=\"material-symbols-outlined text-cyan-700 cursor-pointer\">close</span>\n                        </div>\n                    </div>\n                    <div class=\"flex flex-col items-center justify-center w-full px-4 py-2\">\n                        <div class=\"flex flex-col w-full\">\n                            <label class=\"text-sm font-bold text-cyan-900\">Reminder Title</label>\n                            <input class=\"w-full px-4 py-2 mt-2 border ", " rounded-lg\" pond-keyup=\"title\" type=\"text\" placeholder=\"Todo Title\" value=\"", "\">\n                        </div>\n                        <div class=\"flex flex-col w-full mt-4\">\n                            <label class=\"text-sm font-bold text-cyan-900\">Reminder Description</label>\n                            <textarea class=\"w-full px-4 py-2 mt-2 border ", " rounded-lg\" pond-keyup=\"description\" placeholder=\"Todo Description\">", "</textarea>\n                        </div>\n                        <div class=\"flex flex-col w-full mt-4\">\n                            <label class=\"text-sm font-bold text-cyan-900\">Reminder Due Date</label>\n                            <input class=\"w-full px-4 py-2 mt-2 border ", " rounded-lg\" pond-keyup=\"date\" type=\"date\" value=\"", "\">\n                        </div>\n                        <div class=\"flex items-center justify-center w-full mt-4\">\n                            <button class=\"px-4 py-2 text-sm font-bold text-cyan-100 bg-cyan-500 rounded-lg\" pond-click=\"addReminder\">\n                                ", "\n                            </button>\n                        </div>\n                    </div>\n                </div>\n            </div>"], ["\n            <div class=\"flex flex-col items-center justify-center w-full h-full absolute left-0 top-0 bg-cyan-900 bg-opacity-70\">\n                <div class=\"flex flex-col items-center justify-center w-1/2 h-2/3 bg-cyan-100 rounded-lg\">\n                    <div class=\"flex items-center justify-between w-full px-4 py-2 border-b border-cyan-200\">\n                    <div class=\"text-lg font-bold ", "\">", "</div>\n                        <div class=\"flex items-center justify-center w-8 h-8 mr-4 rounded-full bg-cyan-200\" pond-click=\"closeModal\">\n                            <span class=\"material-symbols-outlined text-cyan-700 cursor-pointer\">close</span>\n                        </div>\n                    </div>\n                    <div class=\"flex flex-col items-center justify-center w-full px-4 py-2\">\n                        <div class=\"flex flex-col w-full\">\n                            <label class=\"text-sm font-bold text-cyan-900\">Reminder Title</label>\n                            <input class=\"w-full px-4 py-2 mt-2 border ", " rounded-lg\" pond-keyup=\"title\" type=\"text\" placeholder=\"Todo Title\" value=\"", "\">\n                        </div>\n                        <div class=\"flex flex-col w-full mt-4\">\n                            <label class=\"text-sm font-bold text-cyan-900\">Reminder Description</label>\n                            <textarea class=\"w-full px-4 py-2 mt-2 border ", " rounded-lg\" pond-keyup=\"description\" placeholder=\"Todo Description\">", "</textarea>\n                        </div>\n                        <div class=\"flex flex-col w-full mt-4\">\n                            <label class=\"text-sm font-bold text-cyan-900\">Reminder Due Date</label>\n                            <input class=\"w-full px-4 py-2 mt-2 border ", " rounded-lg\" pond-keyup=\"date\" type=\"date\" value=\"", "\">\n                        </div>\n                        <div class=\"flex items-center justify-center w-full mt-4\">\n                            <button class=\"px-4 py-2 text-sm font-bold text-cyan-100 bg-cyan-500 rounded-lg\" pond-click=\"addReminder\">\n                                ", "\n                            </button>\n                        </div>\n                    </div>\n                </div>\n            </div>"])), this.error ? 'error' : 'text-cyan-900', this.error ? this.error : !!this.data.id ? 'Edit Todo' : 'Add Todo', this.error ? 'error' : 'border-cyan-200', this.data.text, this.error ? 'error' : 'border-cyan-200', this.data.description, this.error ? 'error' : 'border-cyan-200', this.data.date.toISOString().split('T')[0], this.data.id ? 'Edit Reminder' : 'Add Reminder');
     }
 });
 var templateObject_1;

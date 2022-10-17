@@ -1,5 +1,5 @@
 import {database} from "../controller/database";
-import {html, LiveFactory} from "pondsocket";
+import {html, LiveFactory} from "pondsocket/live";
 import {todoConsumer} from "./index";
 
 /**
@@ -91,7 +91,7 @@ export const DeleteTodoModal = LiveFactory<{id: number}>({
         })
     },
 
-    onEvent(event, context, socket, router) {
+    onEvent(event, socket, router) {
         if (event.type === 'closeModal')
             /**
              * The router.navigateTo function is used to navigate to a different page
@@ -99,7 +99,7 @@ export const DeleteTodoModal = LiveFactory<{id: number}>({
             router.navigateTo('/todo');
 
         if (event.type === 'deleteTodo') {
-            const todo = database.find(todo => todo.id === context.id);
+            const todo = database.find(todo => todo.id === this.id);
             if (todo) {
                 database.splice(database.indexOf(todo), 1);
                 /**

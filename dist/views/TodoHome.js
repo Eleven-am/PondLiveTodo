@@ -5,7 +5,7 @@ var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cook
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TodoHome = void 0;
-var pondsocket_1 = require("pondsocket");
+var live_1 = require("pondsocket/live");
 var database_1 = require("../controller/database");
 var UpdateTodo_1 = require("./UpdateTodo");
 var TodoCard_1 = require("./TodoCard");
@@ -76,7 +76,7 @@ var index_1 = require("./index");
  *
  * There are a lot more properties that can be used to trigger events on the client, check the documentation for more info
  */
-exports.TodoHome = (0, pondsocket_1.LiveFactory)({
+exports.TodoHome = (0, live_1.LiveFactory)({
     routes: [{
             path: '/addTodo',
             Component: UpdateTodo_1.UpdateTodoModal
@@ -105,8 +105,8 @@ exports.TodoHome = (0, pondsocket_1.LiveFactory)({
             name: 'Add Todo',
         });
     },
-    onContextChange: function (name, provider, _socketContext, socket) {
-        if (name === 'SearchContext') {
+    onContextChange: function (context, socket) {
+        index_1.searchConsumer.handleContextChange(context, function (provider) {
             if (provider.query !== '') {
                 var todos = database_1.database.filter(function (todo) { return todo.text.toLowerCase().includes(provider.query.toLowerCase()); });
                 /**
@@ -119,13 +119,13 @@ exports.TodoHome = (0, pondsocket_1.LiveFactory)({
                  * The socket.assign function is used to assign a state to the client on this component
                  */
                 socket.assign({ todos: database_1.database });
-        }
+        });
     },
-    onEvent: function (event, context, socket) {
+    onEvent: function (event, socket) {
         if (event.type === 'toggleComplete') {
             var todo = database_1.database.find(function (todo) { return todo.id === Number(event.dataId); });
-            var innerTodos = context.todos.filter(function (todo) { return todo.id !== Number(event.dataId); });
-            var innerIndex = context.todos.findIndex(function (todo) { return todo.id === Number(event.dataId); });
+            var innerTodos = this.todos.filter(function (todo) { return todo.id !== Number(event.dataId); });
+            var innerIndex = this.todos.findIndex(function (todo) { return todo.id === Number(event.dataId); });
             if (todo) {
                 todo.completed = !todo.completed;
                 innerTodos.splice(innerIndex, 0, todo);
@@ -136,8 +136,8 @@ exports.TodoHome = (0, pondsocket_1.LiveFactory)({
             }
         }
     },
-    render: function (context) {
-        return (0, pondsocket_1.html)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n            <div class=\"flex flex-col mt-6\">\n                ", "\n            </div>\n\n            <!--\n              The context during the render contains a function called renderRoutes, \n              this function can be used to render the nested routes at the current path on the position of the function call\n            -->\n            ", "\n        "], ["\n            <div class=\"flex flex-col mt-6\">\n                ", "\n            </div>\n\n            <!--\n              The context during the render contains a function called renderRoutes, \n              this function can be used to render the nested routes at the current path on the position of the function call\n            -->\n            ", "\n        "])), context.context.todos.map(function (todo) { return (0, TodoCard_1.TodoCard)(todo); }), context.renderRoutes());
+    render: function (renderRoutes) {
+        return (0, live_1.html)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n            <div class=\"flex flex-col mt-6\">\n                ", "\n            </div>\n\n            <!--\n              The context during the render contains a function called renderRoutes, \n              this function can be used to render the nested routes at the current path on the position of the function call\n            -->\n            ", "\n        "], ["\n            <div class=\"flex flex-col mt-6\">\n                ", "\n            </div>\n\n            <!--\n              The context during the render contains a function called renderRoutes, \n              this function can be used to render the nested routes at the current path on the position of the function call\n            -->\n            ", "\n        "])), this.todos.map(function (todo) { return (0, TodoCard_1.TodoCard)(todo); }), renderRoutes());
     }
 });
 var templateObject_1;

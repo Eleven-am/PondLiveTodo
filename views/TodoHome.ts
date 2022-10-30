@@ -1,4 +1,4 @@
-import {html, LiveFactory} from "pondsocket/live";
+import {html, LiveFactory} from "@eleven-am/pondlive";
 import {database, Todo} from "../controller/database";
 import {UpdateTodoModal} from "./UpdateTodo";
 import {TodoCard} from "./TodoCard";

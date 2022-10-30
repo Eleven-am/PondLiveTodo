@@ -1,4 +1,4 @@
-import {html, LiveFactory} from "pondsocket/live";
+import {html, LiveFactory} from "@eleven-am/pondlive";
 import {database} from "../controller/database";
 import {todoConsumer} from "./index";
 
@@ -77,7 +77,7 @@ interface AddTodoAssigns {
 export const UpdateTodoModal = LiveFactory<AddTodoAssigns>({
     routes: [],
 
-    mount: (context, socket, router) => {
+    mount(context, socket, router) {
         if (context.params.id) {
             const todo = database.find(todo => todo.id === Number(context.params.id));
             if (todo) {

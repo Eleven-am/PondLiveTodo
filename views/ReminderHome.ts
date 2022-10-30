@@ -1,5 +1,5 @@
 import {elapsedConsumer, Reminder, ReminderManagerType, ReminderManger} from "../controller/database";
-import {html, LiveFactory} from "pondsocket/live";
+import {html, LiveFactory} from "@eleven-am/pondlive";
 import {ReminderCard} from "./ReminderCard";
 import {homeConsumer, searchConsumer} from "./index";
 import {DeleteReminderModal} from "./DeleteReminder";
@@ -109,13 +109,13 @@ export const ReminderHome = LiveFactory<ReminderContext>({
     },
 
     onContextChange(context, socket) {
-        elapsedConsumer.handleContextChange(context, _ => {
+        elapsedConsumer.handleContextChange(context, () => {
             /**
              * Every global context manager has a function called get that can be used to get the current value of the global context.
              * The get function takes in a socket object
              * The get function returns the current value of the global context
              */
-            const value = searchConsumer.get(socket);
+            const value = searchConsumer.getContext(socket);
 
             if (value.query) {
                 if (value.query === '')

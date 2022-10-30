@@ -1,5 +1,5 @@
 import {database} from "../controller/database";
-import {html, LiveFactory} from "pondsocket/live";
+import {html, LiveFactory} from "@eleven-am/pondlive";
 import {todoConsumer} from "./index";
 
 /**

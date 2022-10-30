@@ -1,4 +1,4 @@
-import {html, LiveFactory} from "pondsocket/live";
+import {html, LiveFactory} from "@eleven-am/pondlive";
 import {ReminderManger} from "../controller/database";
 
 /**

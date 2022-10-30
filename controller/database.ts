@@ -1,4 +1,4 @@
-import {createContext, LiveSocket} from "pondsocket/live";
+import {createContext, LiveSocket} from "@eleven-am/pondlive";
 
 interface ElapsedContext {
     data: Set<{

@@ -1,5 +1,5 @@
 import {Reminder} from "../controller/database";
-import {html} from "pondsocket/live";
+import {html} from "@eleven-am/pondlive";
 
 /**
  * Sometimes it is useful to have a component that is not a live component

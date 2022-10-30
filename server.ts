@@ -1,12 +1,13 @@
-import {PondServer} from "pondsocket/live";
+import {PondLive} from "@eleven-am/pondlive";
 import {Index} from "./views";
 import path from "path";
+import express from "express";
 
 /**
  * This is the main entry point for the server, it is responsible for creating the pond, and setting up the server.
  * An express server can be used but the instantiating process looks a little different
  */
-const server = new PondServer();
+const server = PondLive(express());
 
 /**
  * If you would like to add custom js/css files to the client

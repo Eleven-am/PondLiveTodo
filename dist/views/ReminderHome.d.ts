@@ -68,5 +68,5 @@ interface ReminderContext {
  *
  * There are a lot more properties that can be used to trigger events on the client, check the documentation for more info
  */
-export declare const ReminderHome: import("pondsocket/live").LiveComponent<ReminderContext>;
+export declare const ReminderHome: import("@eleven-am/pondlive").LiveComponent<ReminderContext>;
 export {};

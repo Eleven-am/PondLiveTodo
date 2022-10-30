@@ -6,7 +6,7 @@ var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cook
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReminderHome = void 0;
 var database_1 = require("../controller/database");
-var live_1 = require("pondsocket/live");
+var pondlive_1 = require("@eleven-am/pondlive");
 var ReminderCard_1 = require("./ReminderCard");
 var index_1 = require("./index");
 var DeleteReminder_1 = require("./DeleteReminder");
@@ -76,7 +76,7 @@ var UpdateRminder_1 = require("./UpdateRminder");
  *
  * There are a lot more properties that can be used to trigger events on the client, check the documentation for more info
  */
-exports.ReminderHome = (0, live_1.LiveFactory)({
+exports.ReminderHome = (0, pondlive_1.LiveFactory)({
     routes: [{
             path: '/deleteReminder/:id',
             Component: DeleteReminder_1.DeleteReminderModal
@@ -108,13 +108,13 @@ exports.ReminderHome = (0, live_1.LiveFactory)({
     },
     onContextChange: function (context, socket) {
         var _this = this;
-        database_1.elapsedConsumer.handleContextChange(context, function (_) {
+        database_1.elapsedConsumer.handleContextChange(context, function () {
             /**
              * Every global context manager has a function called get that can be used to get the current value of the global context.
              * The get function takes in a socket object
              * The get function returns the current value of the global context
              */
-            var value = index_1.searchConsumer.get(socket);
+            var value = index_1.searchConsumer.getContext(socket);
             if (value.query) {
                 if (value.query === '')
                     /**
@@ -163,7 +163,7 @@ exports.ReminderHome = (0, live_1.LiveFactory)({
         }
     },
     render: function (renderRoutes) {
-        return (0, live_1.html)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n            <div class=\"flex flex-col mt-6\">\n                ", "\n            </div>\n            \n            <!--\n              The context during the render contains a function called renderRoutes, \n              this function can be used to render the nested routes at the current path on the position of the function call\n            -->\n            ", "\n        "], ["\n            <div class=\"flex flex-col mt-6\">\n                ", "\n            </div>\n            \n            <!--\n              The context during the render contains a function called renderRoutes, \n              this function can be used to render the nested routes at the current path on the position of the function call\n            -->\n            ", "\n        "])), this.reminders.map(function (reminder) { return (0, ReminderCard_1.ReminderCard)(reminder); }), renderRoutes());
+        return (0, pondlive_1.html)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n            <div class=\"flex flex-col mt-6\">\n                ", "\n            </div>\n            \n            <!--\n              The context during the render contains a function called renderRoutes, \n              this function can be used to render the nested routes at the current path on the position of the function call\n            -->\n            ", "\n        "], ["\n            <div class=\"flex flex-col mt-6\">\n                ", "\n            </div>\n            \n            <!--\n              The context during the render contains a function called renderRoutes, \n              this function can be used to render the nested routes at the current path on the position of the function call\n            -->\n            ", "\n        "])), this.reminders.map(function (reminder) { return (0, ReminderCard_1.ReminderCard)(reminder); }), renderRoutes());
     }
 });
 var templateObject_1;

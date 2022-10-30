@@ -1,4 +1,4 @@
-import { LiveSocket } from "pondsocket/live";
+import { LiveSocket } from "@eleven-am/pondlive";
 interface ElapsedContext {
     data: Set<{
         id: number;
@@ -18,7 +18,7 @@ interface ElapsedContext {
  * The consumer is used to modify the state of the context from anywhere
  * To use the consumer, you must first import it from file where it was created
  */
-declare const elapsedConsumer: import("pondsocket/live").ContextConsumer<ElapsedContext>, elapsedProvider: import("pondsocket/live").ContextProvider;
+declare const elapsedConsumer: import("@eleven-am/pondlive").ContextConsumer<ElapsedContext>, elapsedProvider: import("@eleven-am/pondlive").ContextProvider;
 export interface Todo {
     id: number;
     text: string;

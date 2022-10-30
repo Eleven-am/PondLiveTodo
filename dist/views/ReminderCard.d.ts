@@ -7,4 +7,4 @@ import { Reminder } from "../controller/database";
  * This can be useful for code splitting and readability.
  * @constructor
  */
-export declare const ReminderCard: (reminder: Reminder) => import("pondsocket/live").HtmlSafeString;
+export declare const ReminderCard: (reminder: Reminder) => import("@eleven-am/pondlive").HtmlSafeString;

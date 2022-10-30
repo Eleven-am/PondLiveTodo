@@ -23,7 +23,7 @@ interface SearchContext {
  * The consumer is used to modify the state of the context from anywhere
  * To use the consumer, you must first import it from file where it was created
  */
-declare const homeConsumer: import("pondsocket/live").ContextConsumer<{
+declare const homeConsumer: import("@eleven-am/pondlive").ContextConsumer<{
     name: string;
 }>;
 /**
@@ -39,7 +39,7 @@ declare const homeConsumer: import("pondsocket/live").ContextConsumer<{
  * The consumer is used to modify the state of the context from anywhere
  * To use the consumer, you must first import it from file where it was created
  */
-declare const searchConsumer: import("pondsocket/live").ContextConsumer<SearchContext>;
+declare const searchConsumer: import("@eleven-am/pondlive").ContextConsumer<SearchContext>;
 /**
  * This is the context manager for the to-do provider
  * The create context function returns a tuple of the consumer and provider
@@ -53,7 +53,7 @@ declare const searchConsumer: import("pondsocket/live").ContextConsumer<SearchCo
  * The consumer is used to modify the state of the context from anywhere
  * To use the consumer, you must first import it from file where it was created
  */
-declare const todoConsumer: import("pondsocket/live").ContextConsumer<{
+declare const todoConsumer: import("@eleven-am/pondlive").ContextConsumer<{
     todo: string;
     action: boolean;
 }>;
@@ -122,5 +122,5 @@ declare const todoConsumer: import("pondsocket/live").ContextConsumer<{
  *
  * There are a lot more properties that can be used to trigger events on the client, check the documentation for more info
  */
-export declare const Index: import("pondsocket/live").LiveComponent<IndexContext>;
+export declare const Index: import("@eleven-am/pondlive").LiveComponent<IndexContext>;
 export { homeConsumer, searchConsumer, todoConsumer };

@@ -5,7 +5,7 @@ var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cook
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TodoHome = void 0;
-var live_1 = require("pondsocket/live");
+var pondlive_1 = require("@eleven-am/pondlive");
 var database_1 = require("../controller/database");
 var UpdateTodo_1 = require("./UpdateTodo");
 var TodoCard_1 = require("./TodoCard");
@@ -76,7 +76,7 @@ var index_1 = require("./index");
  *
  * There are a lot more properties that can be used to trigger events on the client, check the documentation for more info
  */
-exports.TodoHome = (0, live_1.LiveFactory)({
+exports.TodoHome = (0, pondlive_1.LiveFactory)({
     routes: [{
             path: '/addTodo',
             Component: UpdateTodo_1.UpdateTodoModal
@@ -137,7 +137,7 @@ exports.TodoHome = (0, live_1.LiveFactory)({
         }
     },
     render: function (renderRoutes) {
-        return (0, live_1.html)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n            <div class=\"flex flex-col mt-6\">\n                ", "\n            </div>\n\n            <!--\n              The context during the render contains a function called renderRoutes, \n              this function can be used to render the nested routes at the current path on the position of the function call\n            -->\n            ", "\n        "], ["\n            <div class=\"flex flex-col mt-6\">\n                ", "\n            </div>\n\n            <!--\n              The context during the render contains a function called renderRoutes, \n              this function can be used to render the nested routes at the current path on the position of the function call\n            -->\n            ", "\n        "])), this.todos.map(function (todo) { return (0, TodoCard_1.TodoCard)(todo); }), renderRoutes());
+        return (0, pondlive_1.html)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n            <div class=\"flex flex-col mt-6\">\n                ", "\n            </div>\n\n            <!--\n              The context during the render contains a function called renderRoutes, \n              this function can be used to render the nested routes at the current path on the position of the function call\n            -->\n            ", "\n        "], ["\n            <div class=\"flex flex-col mt-6\">\n                ", "\n            </div>\n\n            <!--\n              The context during the render contains a function called renderRoutes, \n              this function can be used to render the nested routes at the current path on the position of the function call\n            -->\n            ", "\n        "])), this.todos.map(function (todo) { return (0, TodoCard_1.TodoCard)(todo); }), renderRoutes());
     }
 });
 var templateObject_1;

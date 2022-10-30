@@ -63,6 +63,6 @@
  *
  * There are a lot more properties that can be used to trigger events on the client, check the documentation for more info
  */
-export declare const DeleteTodoModal: import("pondsocket/live").LiveComponent<{
+export declare const DeleteTodoModal: import("@eleven-am/pondlive").LiveComponent<{
     id: number;
 }>;

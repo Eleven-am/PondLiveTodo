@@ -17,7 +17,7 @@ var __read = (this && this.__read) || function (o, n) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.elapsedConsumer = exports.elapsedProvider = exports.ReminderManger = exports.database = void 0;
-var live_1 = require("pondsocket/live");
+var pondlive_1 = require("@eleven-am/pondlive");
 /**
  * This is the context manager for the elapsed reminders
  * The create context function returns a tuple of the consumer and provider
@@ -31,7 +31,7 @@ var live_1 = require("pondsocket/live");
  * The consumer is used to modify the state of the context from anywhere
  * To use the consumer, you must first import it from file where it was created
  */
-var _a = __read((0, live_1.createContext)({
+var _a = __read((0, pondlive_1.createContext)({
     data: new Set()
 }), 2), elapsedConsumer = _a[0], elapsedProvider = _a[1];
 exports.elapsedConsumer = elapsedConsumer;

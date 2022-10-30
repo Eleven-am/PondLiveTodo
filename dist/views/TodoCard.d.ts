@@ -7,4 +7,4 @@ import { Todo } from "../controller/database";
  * This can be useful for code splitting and readability.
  * @constructor
  */
-export declare const TodoCard: (todo: Todo) => import("pondsocket/live").HtmlSafeString;
+export declare const TodoCard: (todo: Todo) => import("@eleven-am/pondlive").HtmlSafeString;

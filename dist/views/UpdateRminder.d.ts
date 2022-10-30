@@ -69,5 +69,5 @@ interface UpdateReminderAssigns {
  *
  * There are a lot more properties that can be used to trigger events on the client, check the documentation for more info
  */
-export declare const UpdateReminderModal: import("pondsocket/live").LiveComponent<UpdateReminderAssigns>;
+export declare const UpdateReminderModal: import("@eleven-am/pondlive").LiveComponent<UpdateReminderAssigns>;
 export {};

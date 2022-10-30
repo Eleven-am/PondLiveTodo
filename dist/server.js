@@ -3,14 +3,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var live_1 = require("pondsocket/live");
+var pondlive_1 = require("@eleven-am/pondlive");
 var views_1 = require("./views");
 var path_1 = __importDefault(require("path"));
+var express_1 = __importDefault(require("express"));
 /**
  * This is the main entry point for the server, it is responsible for creating the pond, and setting up the server.
  * An express server can be used but the instantiating process looks a little different
  */
-var server = new live_1.PondServer();
+var server = (0, pondlive_1.PondLive)((0, express_1.default)());
 /**
  * If you would like to add custom js/css files to the client
  * You will need to create a generic HTML file, add those files in the head and body as normal
@@ -28,7 +29,7 @@ server.usePondLive([{
         path: '/',
         Component: views_1.Index // The component to be mounted
     }], {
-    staticPath: path_1.default.join(__dirname, './'),
+    staticPath: path_1.default.join(__dirname, './dist'),
     secret: '8011d716-de08-4dad-94eb-4176251682d5' // The secret used to sign the JWT
 });
 var port = Number(process.env.PORT || 3000);

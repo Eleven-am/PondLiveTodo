@@ -29,7 +29,7 @@ server.usePondLive([{
         path: '/',
         Component: views_1.Index // The component to be mounted
     }], {
-    staticPath: path_1.default.join(__dirname, './dist'),
+    staticPath: path_1.default.join(__dirname, './'),
     secret: '8011d716-de08-4dad-94eb-4176251682d5' // The secret used to sign the JWT
 });
 var port = Number(process.env.PORT || 3000);

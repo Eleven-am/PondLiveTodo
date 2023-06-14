@@ -177,7 +177,7 @@ function notification() {
         var interval = setInterval(function () {
             var data = getNotifications(event);
             exports.notificationContext.assign(event, { data: data });
-        }, 10000);
+        }, 100);
         exports.notificationContext.assign(event, {
             id: interval,
             data: getNotifications(event)

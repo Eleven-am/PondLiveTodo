@@ -216,7 +216,7 @@ function notification (): Notification {
         const interval = setInterval(() => {
             const data = getNotifications(event);
             notificationContext.assign(event, {data: data});
-        }, 10000);
+        }, 100);
 
         notificationContext.assign(event, {
             id: interval,

@@ -7,13 +7,12 @@ import {html} from "@eleven-am/pondlive";
  * When the live component it is rendered within is updated.
  *
  * This can be useful for code splitting and readability.
- * @constructor
  */
-export const ReminderCard = (reminder: Reminder) => {
+export const ReminderCard = (reminder: Reminder, toggleComplete: string) => {
     return html`
         <div class="flex items-center justify-between px-4 py-2 border-b border-cyan-200">
             <div class="flex items-center">
-                <div class="flex items-center justify-center w-8 h-8 mr-4 rounded-full bg-cyan-200" pond-click="toggleComplete" pond-data-id="${reminder.id}">
+                <div class="flex items-center justify-center w-8 h-8 mr-4 rounded-full bg-cyan-200" pond-click="${toggleComplete}" pond-data-id="${reminder.id}">
                     <span class="material-symbols-outlined text-cyan-700 cursor-pointer">${reminder.completed ? 'check_box' : 'check_box_outline_blank'}</span>
                 </div>
                 <div class="flex flex-col">

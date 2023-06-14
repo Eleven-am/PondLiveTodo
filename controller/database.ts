@@ -1,28 +1,5 @@
-import {createContext, LiveSocket} from "@eleven-am/pondlive";
-
-interface ElapsedContext {
-    data: Set<{
-        id: number,
-        elapsed: string
-    }>
-}
-
-/**
- * This is the context manager for the elapsed reminders
- * The create context function returns a tuple of the consumer and provider
- * The first is the consumer that can be used to modify the state of the context from anywhere
- * The second is the provider that makes the context available to the components
- * @type [ContextConsumer<ContextType>, ContextProvider];
- *
- * The provider is passed to the highest level component that needs access to the context
- * Any component that needs access to the context must be a child of the component that has the provider
- *
- * The consumer is used to modify the state of the context from anywhere
- * To use the consumer, you must first import it from file where it was created
- */
-const [elapsedConsumer, elapsedProvider] = createContext<ElapsedContext>({
-    data: new Set()
-});
+import {createClientContext, useAction, useServerInfo} from "@eleven-am/pondlive";
+import {HookContext, LiveContext, ServerContext} from "@eleven-am/pondlive/types";
 
 export interface Todo {
     id: number;
@@ -48,7 +25,7 @@ const testTodo2: Todo = {
     date: new Date()
 }
 
-export const database: Todo[] = [testTodo, testTodo2];
+const todos: Todo[] = [testTodo, testTodo2];
 
 export interface Reminder {
     id: number;
@@ -80,91 +57,184 @@ const testReminder2: Reminder = {
     countDown: 0
 }
 
-/**
- * @desc This is the manager factory, Has nothing to do with PondSocket, thus no documentation
- * @param socket
- * @param reminders
- */
-const monitorReminders = (socket: LiveSocket<any>, reminders: Reminder[]) => {
-    const now = new Date();
-    const set = new Set<{id: number, elapsed: string}>();
+const reminders: Reminder[] = [testReminder, testReminder2];
 
-    reminders.forEach(reminder => {
-        const diff = reminder.date.getTime() - now.getTime();
-        reminder.countDown = diff;
-        if (diff <= 0 && !reminder.completed) {
-            reminder.elapsed = true;
-            set.add({
-                id: reminder.id,
-                elapsed: `${reminder.text} is elapsed, it was due on ${reminder.date.toDateString()}`
-            });
-
-        } else if (reminder.elapsed)
-            reminder.elapsed = false;
-    });
-    elapsedConsumer.assign(socket, {data: set});
+interface DBObject {
+    id: number;
+    text: string;
+    description: string;
+    completed: boolean;
+    date: Date;
 }
 
-export interface ReminderManagerType {
-    unsubscribe: () => void;
-    addReminder: (reminder: Reminder) => void;
-    removeReminder: (id: number) => void;
-    updateReminder: (id: number, reminder: Reminder) => void;
-    findReminder: (id: number) => Reminder | undefined;
-    getReminders: () => Reminder[];
+interface Database<T extends DBObject> {
+    remove: (event: HookContext, id: number) => void;
+    upsert: (event: HookContext, data: T) => void;
+    get: (event: HookContext, id: number) => T | undefined;
+    query: (event: HookContext, query: string) => T[];
+    getAll: (event: HookContext, ) => T[];
 }
 
-const ReminderManager = (socket: LiveSocket<any>): ReminderManagerType => {
-    let reminders = [testReminder, testReminder2];
+export const getDatabase = <T extends DBObject>(context: ServerContext<T[]>): Database<T> => {
 
-    monitorReminders(socket, reminders);
-
-    const interval = setInterval(() => {
-        monitorReminders(socket, reminders);
-    }, 100);
-
-    return {
-        unsubscribe: () => {
-            clearInterval(interval);
-        },
-
-        addReminder: (reminder: Reminder) => {
-            reminders.push(reminder);
-        },
-
-        removeReminder: (id: number) => {
-            reminders = reminders.filter(reminder => reminder.id !== id);
-        },
-
-        updateReminder: (id: number, reminder: Reminder) => {
-            reminders = reminders.map(data => data.id === id ? reminder : data);
-        },
-
-        findReminder: (id: number) => {
-            return reminders.find(data => data.id === id);
-        },
-
-        getReminders: () => {
-            return reminders;
-        }
+    const remove = (event: HookContext, id: number) => {
+        context.setState(event, (db) => db.filter(item => item.id !== id));
     }
-}
 
-const ManagerFactory = () => {
-    const managers = new Map<string, ReminderManagerType>();
-
-    return {
-        getManager: (socket: LiveSocket<any>) => {
-            const id = socket.clientId;
-            if (!managers.has(id)) {
-                managers.set(id, ReminderManager(socket));
+    const upsert = (event: HookContext, item: T) => {
+        context.setState(event, (data) => {
+            const index = data.findIndex(i => i.id === item.id);
+            if (index === -1) {
+                item.id = data.length + 1;
+                return [...data, item]
             }
 
-            return managers.get(id) as ReminderManagerType;
-        }
+            data[index] = item;
+            return data;
+        });
+    }
+
+    const query = (event: HookContext, query: string) => context.getState(event)
+        .filter(item => item.text.toLowerCase()
+            .includes(query.toLowerCase()));
+
+    const get = (event: HookContext, id: number) => context.getState(event)
+        .find(item => item.id === id);
+
+    const getAll = (event: HookContext) => context.getState(event);
+
+    return {
+        remove,
+        upsert,
+        get,
+        getAll,
+        query
     }
 }
 
-export const ReminderManger = ManagerFactory();
+export const todosContext = createClientContext<Todo[]>(todos);
+export const remindersContext = createClientContext<Reminder[]>(reminders);
+export const todoDatabase = getDatabase<Todo>(todosContext);
+export const reminderDatabase = getDatabase<Reminder>(remindersContext);
+export const searchContext = createClientContext<{ query: string }>({query: ''});
+export const homeContext = createClientContext<{ active: boolean | null }>({active: null});
 
-export {elapsedProvider, elapsedConsumer};
+const defaultObject: DBObject = {
+    id: 0,
+    text: '',
+    description: '',
+    completed: false,
+    date: new Date()
+}
+
+const upsertContext = createClientContext<DBObject>(defaultObject);
+
+export const useUpsertHook = <T extends DBObject>(ctx: LiveContext, database: Database<T>, path: string, onAdd: (data: DBObject) => T) => {
+    const [obj, setObjOnServer] = useServerInfo(ctx, upsertContext);
+
+    const [error, action, setActionOnServer] = useAction(ctx, undefined, {
+        closeModal: (event) => event.navigateTo(`/${path.toLowerCase()}`),
+        upsert: (event): string | undefined => {
+            const {id, text, description, date} = upsertContext.getState(event);
+            if (!text || !description) {
+                return 'Please fill out all fields';
+            }
+
+            const dataObject: DBObject = {
+                id: id,
+                text: text,
+                description: description,
+                date: date,
+                completed: false,
+            }
+
+            database.upsert(event, onAdd(dataObject));
+            event.navigateTo(`/${path.toLowerCase()}`);
+        }
+    });
+
+    const [__, objectAction] = useAction(ctx, undefined, {
+        setDate: (event) => setObjOnServer(event, { date: new Date(event.data.value ?? '') }),
+        setText: (event) => setObjOnServer(event, { text: event.data.value ?? '' }),
+        setDescription: (event) => setObjOnServer(event, { description: event.data.value ?? '' }),
+    })
+
+    const capitaliseFirstLetter = (string: string) => string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+
+    ctx.onMount((req, res) => {
+        const reqId = req.params.id;
+        if (reqId) {
+            const dataObject = database.get(req, Number(reqId));
+            if (dataObject) {
+                setObjOnServer(req, dataObject);
+                res.setPageTitle(`Edit ${capitaliseFirstLetter(path)}: ${dataObject.text}`);
+                return;
+            }
+
+            setActionOnServer(req, `No ${capitaliseFirstLetter(path)} with that id found`);
+        }
+    });
+
+    ctx.onUnmount((event) => setObjOnServer(event, defaultObject))
+
+    return {
+        description: obj.description,
+        dueDate: obj.date,
+        text: obj.text,
+        objectAction,
+        id: obj.id,
+        error,
+        action
+    }
+}
+
+interface Notification {
+    monitor: (event: HookContext) => void;
+    clear: (event: HookContext) => void;
+}
+
+interface NotificationContext {
+    id: NodeJS.Timeout | null;
+    data: Reminder[];
+}
+
+export const notificationContext = createClientContext<NotificationContext>({id: null, data: []});
+
+function notification (): Notification {
+
+    const getNotifications = (event: HookContext) => remindersContext.getState(event)
+        .filter(item => !item.completed && !item.elapsed)
+        .filter(item => item.date.getTime() - Date.now() < 0)
+        .sort((a, b) => a.date.getTime() - b.date.getTime())
+        .map(item => ({
+            ...item,
+            elapsed: true,
+            text: `${item.text} is due`
+        }))
+
+    const monitor = (event: HookContext) => {
+        const interval = setInterval(() => {
+            const data = getNotifications(event);
+            notificationContext.assign(event, {data: data});
+        }, 10000);
+
+        notificationContext.assign(event, {
+            id: interval,
+            data: getNotifications(event)
+        });
+    }
+
+    const clear = (event: HookContext) => {
+        const id = notificationContext.getState(event).id;
+        if (id) {
+            clearInterval(id);
+        }
+    }
+
+    return {
+        monitor,
+        clear,
+    }
+}
+
+export const manager = notification();

@@ -6,7 +6,7 @@
  * The LiveSocket object on the server has an emit function that can be used to send events to the client.
  */
 
-window.addEventListener('pondReady', event => {
+window.addEventListener('pond-ready', event => {
     console.log('Pond is ready!', event.detail);
 })
 

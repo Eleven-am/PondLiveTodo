@@ -21,7 +21,7 @@
     "typescript": "^4.8.4"
   },
   "dependencies": {
-    "@eleven-am/pondlive": "^0.1.59",
+    "@eleven-am/pondlive": "^0.1.60",
     "express": "^4.18.2"
   }
 }

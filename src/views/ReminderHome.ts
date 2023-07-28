@@ -8,7 +8,7 @@ import {Component} from "@eleven-am/pondlive/types";
 export const ReminderHome: Component = (ctx) => {
     const [search] = useServerInfo(ctx, searchContext);
     const routes = useRouter([{
-        path: '/deleteReminder',
+        path: '/deleteReminder/:id',
         component: DeleteReminderModal
     }, {
         path: '/editReminder/:id',

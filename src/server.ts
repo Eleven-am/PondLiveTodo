@@ -7,7 +7,7 @@ const router = new Router();
 
 router.mount('/', Index);
 
-router.addStaticRoute(path.join(__dirname, './dist'));
+router.addStaticRoute(path.join(__dirname, '../public'));
 
 const app = router.serveWithExpress('/', express());
 

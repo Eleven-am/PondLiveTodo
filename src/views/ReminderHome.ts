@@ -14,7 +14,7 @@ export const ReminderHome: Component = (ctx) => {
         path: '/editReminder/:id',
         component: UpdateReminderModal
     }, {
-        path: '/addReminder/:id',
+        path: '/addReminder',
         component: UpdateReminderModal
     }]);
 
